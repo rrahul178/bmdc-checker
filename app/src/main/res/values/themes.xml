@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BMDCChecker" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">#1a5c3a</item>
+        <item name="colorPrimaryVariant">#2d8a58</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#c9a84c</item>
+        <item name="colorOnSecondary">#000000</item>
+        <item name="android:statusBarColor">#1a5c3a</item>
+        <item name="android:navigationBarColor">#1a5c3a</item>
+    </style>
+</resources>
