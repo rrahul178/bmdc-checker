@@ -8,239 +8,60 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    --green: #1a5c3a;
-    --green-light: #2d8a58;
-    --gold: #c9a84c;
-    --cream: #f9f6f0;
-    --dark: #1a1a1a;
-    --red: #c0392b;
-    --orange: #e67e22;
-    --gray: #6b7280;
-    --border: #ddd5c8;
+    --green: #1a5c3a; --green-light: #2d8a58; --gold: #c9a84c;
+    --cream: #f9f6f0; --dark: #1a1a1a; --red: #c0392b;
+    --orange: #e67e22; --gray: #6b7280; --border: #ddd5c8;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Source Sans 3', sans-serif;
-    background: var(--cream);
-    color: var(--dark);
-    min-height: 100vh;
-  }
-  header {
-    background: var(--green);
-    color: white;
-    padding: 24px 32px;
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-  }
-  .logo-icon {
-    width: 52px; height: 52px;
-    background: var(--gold);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px; flex-shrink: 0;
-  }
-  header h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.6rem;
-    line-height: 1.2;
-  }
-  header p { font-size: 0.85rem; opacity: 0.8; margin-top: 3px; }
-
-  .container { max-width: 900px; margin: 0 auto; padding: 32px 20px; }
-
-  .card {
-    background: white;
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-    margin-bottom: 24px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-  }
-  .card h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.2rem;
-    color: var(--green);
-    margin-bottom: 16px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--gold);
-  }
-
-  /* Upload area */
-  .upload-area {
-    border: 2px dashed var(--border);
-    border-radius: 10px;
-    padding: 40px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.2s;
-    background: var(--cream);
-  }
-  .upload-area:hover, .upload-area.drag-over {
-    border-color: var(--green-light);
-    background: #f0f7f4;
-  }
-  .upload-area .icon { font-size: 40px; margin-bottom: 10px; }
-  .upload-area p { color: var(--gray); font-size: 0.95rem; }
+  body { font-family: 'Source Sans 3', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
+  header { background: var(--green); color: white; padding: 20px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  .logo-icon { width: 48px; height: 48px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+  header h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.2; }
+  header p { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
+  .container { max-width: 700px; margin: 0 auto; padding: 20px 14px; }
+  .card { background: white; border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 18px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .card h2 { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--green); margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid var(--gold); }
+  .upload-area { border: 2px dashed var(--border); border-radius: 10px; padding: 28px 16px; text-align: center; cursor: pointer; transition: all 0.2s; background: var(--cream); }
+  .upload-area:hover { border-color: var(--green-light); background: #f0f7f4; }
+  .upload-area .icon { font-size: 36px; margin-bottom: 8px; }
+  .upload-area p { color: var(--gray); font-size: 0.9rem; }
   .upload-area strong { color: var(--green); }
   #fileInput { display: none; }
-
-  /* OR divider */
-  .or-divider {
-    text-align: center;
-    margin: 16px 0;
-    color: var(--gray);
-    font-size: 0.85rem;
-    position: relative;
-  }
-  .or-divider::before, .or-divider::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    width: 42%;
-    height: 1px;
-    background: var(--border);
-  }
-  .or-divider::before { left: 0; }
-  .or-divider::after { right: 0; }
-
-  textarea {
-    width: 100%;
-    min-height: 200px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 0.95rem;
-    resize: vertical;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .or-divider { text-align: center; margin: 14px 0; color: var(--gray); font-size: 0.82rem; position: relative; }
+  .or-divider::before, .or-divider::after { content: ''; position: absolute; top: 50%; width: 42%; height: 1px; background: var(--border); }
+  .or-divider::before { left: 0; } .or-divider::after { right: 0; }
+  textarea { width: 100%; min-height: 160px; border: 1px solid var(--border); border-radius: 8px; padding: 12px; font-family: 'Source Sans 3', sans-serif; font-size: 0.92rem; resize: vertical; outline: none; transition: border-color 0.2s; }
   textarea:focus { border-color: var(--green-light); }
-
-  /* Checklist */
-  .checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
-  .check-item {
-    display: flex; align-items: center; gap: 10px;
-    padding: 10px 14px;
-    border-radius: 8px;
-    background: var(--cream);
-    border: 1px solid var(--border);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: background 0.15s;
-  }
-  .check-item:hover { background: #f0f7f4; }
-  .check-item input[type=checkbox] { accent-color: var(--green); width: 16px; height: 16px; }
-
-  /* Analyze button */
-  .btn-analyze {
-    width: 100%;
-    padding: 16px;
-    background: var(--green);
-    color: white;
-    border: none;
-    border-radius: 10px;
-    font-family: 'Playfair Display', serif;
-    font-size: 1.1rem;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    letter-spacing: 0.5px;
-  }
-  .btn-analyze:hover { background: var(--green-light); transform: translateY(-1px); }
-  .btn-analyze:disabled { background: var(--gray); cursor: not-allowed; transform: none; }
-
-  /* Loading */
-  .loading {
-    display: none;
-    text-align: center;
-    padding: 32px;
-  }
-  .spinner {
-    width: 44px; height: 44px;
-    border: 4px solid var(--border);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 16px;
-  }
+  .checklist { display: flex; flex-direction: column; gap: 7px; margin-bottom: 18px; }
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 8px; background: var(--cream); border: 1px solid var(--border); font-size: 0.88rem; cursor: pointer; }
+  .check-item input[type=checkbox] { accent-color: var(--green); width: 16px; height: 16px; margin-top: 2px; flex-shrink: 0; }
+  .btn-analyze { width: 100%; padding: 15px; background: var(--green); color: white; border: none; border-radius: 10px; font-family: 'Playfair Display', serif; font-size: 1.05rem; cursor: pointer; transition: background 0.2s; }
+  .btn-analyze:hover { background: var(--green-light); }
+  .btn-analyze:disabled { background: var(--gray); cursor: not-allowed; }
+  .loading { display: none; text-align: center; padding: 28px; }
+  .spinner { width: 42px; height: 42px; border: 4px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 14px; }
   @keyframes spin { to { transform: rotate(360deg); } }
-  .loading p { color: var(--gray); }
-
-  /* Results */
   #results { display: none; }
-  .summary-bar {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-  }
-  .summary-pill {
-    padding: 8px 18px;
-    border-radius: 20px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    display: flex; align-items: center; gap: 6px;
-  }
+  .summary-bar { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+  .summary-pill { padding: 7px 16px; border-radius: 20px; font-size: 0.88rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
   .pill-error { background: #fde8e8; color: var(--red); }
   .pill-warning { background: #fef3e2; color: var(--orange); }
   .pill-ok { background: #e6f4ee; color: var(--green); }
-
-  .issue-list { display: flex; flex-direction: column; gap: 10px; }
-  .issue {
-    padding: 14px 16px;
-    border-radius: 8px;
-    border-left: 4px solid;
-    font-size: 0.92rem;
-    line-height: 1.5;
-  }
+  .issue-list { display: flex; flex-direction: column; gap: 9px; }
+  .issue { padding: 12px 14px; border-radius: 8px; border-left: 4px solid; font-size: 0.88rem; line-height: 1.5; }
   .issue-error { background: #fde8e8; border-color: var(--red); }
   .issue-warning { background: #fef3e2; border-color: var(--orange); }
   .issue-ok { background: #e6f4ee; border-color: var(--green); }
-  .issue strong { display: block; margin-bottom: 4px; font-size: 0.95rem; }
-  .issue-tag {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding: 2px 8px;
-    border-radius: 10px;
-    margin-bottom: 6px;
-    font-weight: 600;
-  }
+  .issue strong { display: block; margin-bottom: 3px; }
+  .issue-tag { display: inline-block; font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; margin-bottom: 5px; font-weight: 600; }
   .tag-bmdc { background: #e8eaf6; color: #3949ab; }
   .tag-lang { background: #f3e5f5; color: #7b1fa2; }
   .tag-struct { background: #e0f2f1; color: #00695c; }
-
-  .btn-pdf {
-    margin-top: 20px;
-    padding: 13px 28px;
-    background: var(--gold);
-    color: var(--dark);
-    border: none;
-    border-radius: 8px;
-    font-family: 'Source Sans 3', sans-serif;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-  }
+  .btn-pdf { margin-top: 18px; padding: 12px 24px; background: var(--gold); color: var(--dark); border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
   .btn-pdf:hover { background: #b8932d; color: white; }
-
-  .filename-tag {
-    display: inline-block;
-    background: #e6f4ee;
-    color: var(--green);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    margin-top: 10px;
-  }
-  .section-score {
-    font-size: 0.8rem;
-    color: var(--gray);
-    margin-top: 16px;
-    text-align: right;
-  }
+  .filename-tag { display: inline-block; background: #e6f4ee; color: var(--green); padding: 3px 10px; border-radius: 20px; font-size: 0.82rem; margin-top: 8px; }
+  .score-text { font-size: 0.82rem; color: var(--gray); margin-top: 14px; text-align: right; }
+  .error-box { background: #fde8e8; border: 1px solid var(--red); border-radius: 8px; padding: 14px; margin-top: 10px; font-size: 0.88rem; color: var(--red); display: none; }
 </style>
 </head>
 <body>
@@ -248,38 +69,35 @@
 <header>
   <div class="logo-icon">⚕</div>
   <div>
-    <h1>BM&DC Article Compliance Checker</h1>
-    <p>Bangladesh Medical & Dental Council — Journal Recognition Criteria</p>
+    <h1>BM&DC Article Checker</h1>
+    <p>Bangladesh Medical & Dental Council</p>
   </div>
 </header>
 
 <div class="container">
 
-  <!-- Upload -->
   <div class="card">
     <h2>📄 Upload Your Article</h2>
     <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
       <div class="icon">📂</div>
-      <p><strong>Click to upload</strong> or drag & drop your article</p>
-      <p style="margin-top:6px;font-size:0.82rem;">Supports: PDF, DOC, DOCX, TXT</p>
+      <p><strong>Click to upload</strong> your article file</p>
+      <p style="margin-top:5px;font-size:0.78rem;">PDF, DOC, DOCX, TXT</p>
     </div>
     <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt"/>
     <div id="fileNameTag"></div>
-
-    <div class="or-divider">OR paste article text below</div>
-
-    <textarea id="articleText" placeholder="Paste your article text here...&#10;&#10;Example:&#10;Title: Study on diabetes prevalence...&#10;Authors: Dr. Rahman, Dr. Hossain&#10;Abstract: This study investigates..."></textarea>
+    <div class="or-divider">OR paste text below</div>
+    <textarea id="articleText" placeholder="Paste your article text here...&#10;&#10;Title: Your article title...&#10;Abstract: Background, Objectives..."></textarea>
+    <div class="error-box" id="errorBox"></div>
   </div>
 
-  <!-- Check Options -->
   <div class="card">
-    <h2>🔍 Select Checks to Perform</h2>
+    <h2>🔍 Select Checks</h2>
     <div class="checklist">
       <label class="check-item"><input type="checkbox" checked value="structure"> Article structure (Title, Abstract, Keywords, Introduction, Methods, Results, Discussion)</label>
       <label class="check-item"><input type="checkbox" checked value="abstract"> Abstract format (Background, Objectives, Methods, Results, Conclusion)</label>
       <label class="check-item"><input type="checkbox" checked value="authors"> Author details & affiliations</label>
       <label class="check-item"><input type="checkbox" checked value="references"> Reference/citation format</label>
-      <label class="check-item"><input type="checkbox" checked value="ethics"> Ethical requirements (IRB, plagiarism, AI declaration)</label>
+      <label class="check-item"><input type="checkbox" checked value="ethics"> Ethical requirements (IRB, plagiarism, AI use)</label>
       <label class="check-item"><input type="checkbox" checked value="language"> Language & grammar errors</label>
       <label class="check-item"><input type="checkbox" checked value="tables"> Tables & figures compliance</label>
       <label class="check-item"><input type="checkbox" checked value="keywords"> Keywords (5–7 required)</label>
@@ -287,115 +105,101 @@
     <button class="btn-analyze" id="analyzeBtn" onclick="analyzeArticle()">🔬 Analyze Article</button>
   </div>
 
-  <!-- Loading -->
   <div class="loading" id="loading">
     <div class="spinner"></div>
     <p>AI is analyzing your article against BM&DC criteria...</p>
   </div>
 
-  <!-- Results -->
   <div class="card" id="results">
     <h2>📋 Analysis Report</h2>
     <div class="summary-bar" id="summaryBar"></div>
     <div class="issue-list" id="issueList"></div>
-    <div class="section-score" id="scoreText"></div>
+    <div class="score-text" id="scoreText"></div>
     <button class="btn-pdf" onclick="downloadPDF()">⬇ Download PDF Report</button>
   </div>
 
 </div>
 
 <script>
-const BMDC_RULES = `
-You are a strict BM&DC (Bangladesh Medical and Dental Council) journal article compliance checker.
+const BMDC_RULES = `You are a BM&DC (Bangladesh Medical and Dental Council) journal article compliance checker. Analyze the article and return ONLY a valid JSON array. No other text, no markdown, no explanation.
 
-BM&DC rules for manuscript submission (Appendix 1):
-1. Manuscripts must be written in English on biomedical topics.
-2. Article must NOT have been previously published elsewhere.
-3. Title page must include: title, all authors with affiliations, department names, email, phone number.
-4. Title must be concise, informative and self-explanatory.
-5. Abstract must be structured: Background, Objectives, Materials & Methods, Results, Conclusion.
-6. Keywords: 5–7 relevant keywords required.
-7. Body must have: Introduction, Materials & Methods, Results, Discussion sections.
-8. Introduction: state research problem, objectives, significance. No conclusions/data here.
-9. Materials & Methods: study design, period, place, sample size, sampling method, statistical analysis, ethical issues.
-10. Results: present findings clearly with tables/figures. No interpretation here.
-11. Discussion: interpret findings, compare with previous studies, state limitations, propose future directions.
-12. Tables and figures must be sequentially numbered with descriptive titles/legends.
-13. Abbreviations must be defined on first use. No abbreviations in the title.
-14. References must follow journal citation style (APA/Vancouver/Harvard) consistently.
-15. Acknowledgment, Conflict of interest, Author contribution, Funding source sections should be present.
-16. IRB/ethical clearance reference number and date must be mentioned.
-17. AI tool usage must be declared if used.
-18. Plagiarism report must be submitted.
-19. Cover letter needed confirming all authors approved the manuscript.
-20. Tables/figures from other sources need written permission.
+BM&DC rules:
+1. Manuscripts must be in English on biomedical topics
+2. Title page: title, authors with affiliations, department, email, phone
+3. Title: concise, informative, self-explanatory, no abbreviations
+4. Abstract: structured with Background, Objectives, Materials & Methods, Results, Conclusion
+5. Keywords: exactly 5-7 relevant keywords
+6. Body sections required: Introduction, Materials & Methods, Results, Discussion
+7. Introduction: research problem, objectives, significance - no data or conclusions
+8. Methods: study design, period, place, sample size, sampling, statistical analysis, ethical clearance
+9. Results: findings with tables/figures, no interpretation
+10. Discussion: interpret findings, compare literature, limitations, future directions
+11. Tables/figures: sequentially numbered with descriptive titles
+12. Abbreviations: defined on first use, not in title
+13. References: consistent citation style (APA/Vancouver/Harvard)
+14. Required sections: Acknowledgment, Conflict of interest, Author contribution, Funding source
+15. IRB clearance number and date must be mentioned
+16. AI tool usage must be declared if used
+17. Plagiarism report required
 
-Analyze the article text and return a JSON array of issues. Each issue must be:
-{
-  "type": "error" | "warning" | "ok",
-  "category": "bmdc" | "language" | "structure",
-  "title": "short title",
-  "detail": "specific explanation of what is missing or wrong, or what is correct"
-}
+Return JSON array format:
+[{"type":"error","category":"bmdc","title":"short title","detail":"specific detail"},...]
 
-Check for:
-- Missing required sections
-- Abstract not structured properly
-- Missing keywords or wrong count
-- Language errors (grammar, spelling, clarity, passive/active voice issues)
-- Missing author details
-- No IRB mention
-- No conflict of interest section
-- No acknowledgment
-- No funding source
-- Abbreviation issues
-- Reference format inconsistencies
-- Tables/figures issues
-- Any other BM&DC rule violations
-
-Be thorough. Return ONLY the JSON array, no other text.
-`;
+type must be: "error", "warning", or "ok"
+category must be: "bmdc", "language", or "structure"
+Return ONLY the JSON array, nothing else.`;
 
 let analysisResults = [];
 let articleContent = '';
-
-// Drag and drop
-const uploadArea = document.getElementById('uploadArea');
-uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.classList.add('drag-over'); });
-uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
-uploadArea.addEventListener('drop', e => {
-  e.preventDefault();
-  uploadArea.classList.remove('drag-over');
-  const file = e.dataTransfer.files[0];
-  if (file) handleFile(file);
-});
 
 document.getElementById('fileInput').addEventListener('change', e => {
   if (e.target.files[0]) handleFile(e.target.files[0]);
 });
 
+const uploadArea = document.getElementById('uploadArea');
+uploadArea.addEventListener('dragover', e => { e.preventDefault(); uploadArea.style.borderColor = '#2d8a58'; });
+uploadArea.addEventListener('dragleave', () => { uploadArea.style.borderColor = ''; });
+uploadArea.addEventListener('drop', e => {
+  e.preventDefault();
+  uploadArea.style.borderColor = '';
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+
 function handleFile(file) {
   document.getElementById('fileNameTag').innerHTML = `<span class="filename-tag">📎 ${file.name}</span>`;
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result;
-    document.getElementById('articleText').value = text.substring(0, 8000);
-  };
   if (file.type === 'text/plain') {
+    const reader = new FileReader();
+    reader.onload = e => { document.getElementById('articleText').value = e.target.result.substring(0, 8000); };
     reader.readAsText(file);
   } else {
-    document.getElementById('articleText').value = `[File uploaded: ${file.name}]\n\nNote: For PDF/DOC files, please also paste the article text below for best analysis results.`;
+    document.getElementById('articleText').value = `[File: ${file.name}]\n\nPlease also paste the article text below for analysis.`;
   }
 }
 
+function showError(msg) {
+  const box = document.getElementById('errorBox');
+  box.style.display = 'block';
+  box.textContent = msg;
+}
+
+function hideError() {
+  document.getElementById('errorBox').style.display = 'none';
+}
+
 async function analyzeArticle() {
+  hideError();
   articleContent = document.getElementById('articleText').value.trim();
-  if (!articleContent || articleContent.length < 50) {
-    alert('অনুগ্রহ করে আর্টিকেলের টেক্সট পেস্ট করুন অথবা ফাইল আপলোড করুন।');
+  
+  if (!articleContent || articleContent.length < 30) {
+    showError('অনুগ্রহ করে আর্টিকেলের টেক্সট পেস্ট করুন।');
     return;
   }
 
   const checks = [...document.querySelectorAll('.checklist input:checked')].map(c => c.value);
+  if (checks.length === 0) {
+    showError('অন্তত একটি check সিলেক্ট করুন।');
+    return;
+  }
 
   document.getElementById('loading').style.display = 'block';
   document.getElementById('results').style.display = 'none';
@@ -404,27 +208,84 @@ async function analyzeArticle() {
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
+        max_tokens: 2000,
         system: BMDC_RULES,
         messages: [{
           role: 'user',
-          content: `Check these areas: ${checks.join(', ')}.\n\nARTICLE TEXT:\n${articleContent.substring(0, 6000)}`
+          content: `Check these areas: ${checks.join(', ')}.\n\nARTICLE:\n${articleContent.substring(0, 5000)}`
         }]
       })
     });
 
     const data = await response.json();
-    const raw = data.content.map(i => i.text || '').join('');
-    const clean = raw.replace(/```json|```/g, '').trim();
-    analysisResults = JSON.parse(clean);
+
+    if (!response.ok) {
+      throw new Error('API Error ' + response.status + ': ' + (data.error?.message || 'Unknown error'));
+    }
+
+    if (!data.content || !Array.isArray(data.content) || data.content.length === 0) {
+      throw new Error('Empty response from API');
+    }
+
+    // Extract text from response
+    const raw = data.content
+      .filter(item => item && item.type === 'text')
+      .map(item => item.text || '')
+      .join('');
+
+    if (!raw) throw new Error('No text in API response');
+
+    // Try to extract JSON array
+    let parsed = null;
+    
+    // Method 1: direct JSON array match
+    const arrayMatch = raw.match(/\[[\s\S]*?\]/);
+    if (arrayMatch) {
+      try { parsed = JSON.parse(arrayMatch[0]); } catch(e) {}
+    }
+    
+    // Method 2: clean and parse
+    if (!parsed) {
+      try {
+        const clean = raw.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+        parsed = JSON.parse(clean);
+      } catch(e) {}
+    }
+
+    // Method 3: fallback — show raw response
+    if (!parsed || !Array.isArray(parsed)) {
+      parsed = [{
+        type: 'warning',
+        category: 'bmdc',
+        title: 'Analysis Result',
+        detail: raw.substring(0, 400)
+      }];
+    }
+
+    // Validate each item
+    analysisResults = parsed.filter(item => item && typeof item === 'object').map(item => ({
+      type: ['error','warning','ok'].includes(item.type) ? item.type : 'warning',
+      category: ['bmdc','language','structure'].includes(item.category) ? item.category : 'bmdc',
+      title: String(item.title || 'Issue found'),
+      detail: String(item.detail || '')
+    }));
+
+    if (analysisResults.length === 0) {
+      analysisResults = [{ type: 'ok', category: 'bmdc', title: 'Analysis Complete', detail: 'No major issues found.' }];
+    }
+
     showResults(analysisResults);
+
   } catch (err) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('analyzeBtn').disabled = false;
-    alert('বিশ্লেষণে সমস্যা হয়েছে। আবার চেষ্টা করুন।\n' + err.message);
+    showError('বিশ্লেষণে সমস্যা: ' + err.message + '\n\nInternet connection চেক করুন।');
   }
 }
 
@@ -436,19 +297,17 @@ function showResults(results) {
   const errors = results.filter(r => r.type === 'error').length;
   const warnings = results.filter(r => r.type === 'warning').length;
   const oks = results.filter(r => r.type === 'ok').length;
+  const total = results.length;
+  const score = total > 0 ? Math.round((oks / total) * 100) : 0;
 
   document.getElementById('summaryBar').innerHTML = `
     <div class="summary-pill pill-error">❌ ${errors} Error${errors !== 1 ? 's' : ''}</div>
     <div class="summary-pill pill-warning">⚠️ ${warnings} Warning${warnings !== 1 ? 's' : ''}</div>
     <div class="summary-pill pill-ok">✅ ${oks} Passed</div>
   `;
+  document.getElementById('scoreText').textContent = `Compliance Score: ${score}% (${oks}/${total} passed)`;
 
-  const total = results.length;
-  const score = total > 0 ? Math.round((oks / total) * 100) : 0;
-  document.getElementById('scoreText').textContent = `Compliance Score: ${score}% (${oks}/${total} checks passed)`;
-
-  const issueList = document.getElementById('issueList');
-  issueList.innerHTML = results.map(r => `
+  document.getElementById('issueList').innerHTML = results.map(r => `
     <div class="issue issue-${r.type}">
       <span class="issue-tag tag-${r.category}">${r.category === 'bmdc' ? 'BM&DC Rule' : r.category === 'language' ? 'Language' : 'Structure'}</span>
       <strong>${r.type === 'error' ? '❌' : r.type === 'warning' ? '⚠️' : '✅'} ${r.title}</strong>
@@ -460,64 +319,44 @@ function showResults(results) {
 }
 
 function downloadPDF() {
+  if (!window.jspdf) { alert('PDF library loading... try again.'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const now = new Date().toLocaleDateString('en-GB');
 
   doc.setFillColor(26, 92, 58);
-  doc.rect(0, 0, 210, 40, 'F');
-  doc.setTextColor(255, 255, 255);
-  doc.setFontSize(16);
-  doc.setFont('helvetica', 'bold');
-  doc.text('BM&DC Article Compliance Report', 105, 18, { align: 'center' });
-  doc.setFontSize(10);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Bangladesh Medical and Dental Council', 105, 28, { align: 'center' });
-  doc.text(`Generated: ${now}`, 105, 36, { align: 'center' });
+  doc.rect(0, 0, 210, 38, 'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(15); doc.setFont('helvetica','bold');
+  doc.text('BM&DC Article Compliance Report', 105, 16, { align: 'center' });
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('Bangladesh Medical and Dental Council', 105, 25, { align: 'center' });
+  doc.text(`Generated: ${now}`, 105, 33, { align: 'center' });
 
   const errors = analysisResults.filter(r => r.type === 'error').length;
-  const warnings = analysisResults.filter(r => r.type === 'warning').length;
   const oks = analysisResults.filter(r => r.type === 'ok').length;
   const score = Math.round((oks / analysisResults.length) * 100);
 
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(12);
-  doc.setFont('helvetica', 'bold');
-  doc.text('Summary', 14, 52);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.text(`Compliance Score: ${score}%   |   Errors: ${errors}   |   Warnings: ${warnings}   |   Passed: ${oks}`, 14, 60);
+  doc.setTextColor(0,0,0);
+  doc.setFontSize(11); doc.setFont('helvetica','bold');
+  doc.text('Summary', 14, 50);
+  doc.setFont('helvetica','normal'); doc.setFontSize(10);
+  doc.text(`Score: ${score}%  |  Errors: ${errors}  |  Passed: ${oks}/${analysisResults.length}`, 14, 58);
 
-  let y = 72;
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(11);
-  doc.text('Detailed Issues:', 14, y);
-  y += 8;
-
+  let y = 70;
   analysisResults.forEach((r, i) => {
     if (y > 270) { doc.addPage(); y = 20; }
-
-    const icon = r.type === 'error' ? '[ERROR]' : r.type === 'warning' ? '[WARNING]' : '[OK]';
-    const rgb = r.type === 'error' ? [192, 57, 43] : r.type === 'warning' ? [230, 126, 34] : [26, 92, 58];
-    doc.setTextColor(...rgb);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text(`${i + 1}. ${icon} ${r.title}`, 14, y);
+    const rgb = r.type === 'error' ? [192,57,43] : r.type === 'warning' ? [230,126,34] : [26,92,58];
+    doc.setTextColor(...rgb); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text(`${i+1}. [${r.type.toUpperCase()}] ${r.title}`, 14, y);
     y += 6;
-
-    doc.setTextColor(60, 60, 60);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
+    doc.setTextColor(60,60,60); doc.setFont('helvetica','normal'); doc.setFontSize(9);
     const lines = doc.splitTextToSize(r.detail, 180);
     doc.text(lines, 18, y);
     y += lines.length * 5 + 5;
   });
 
-  doc.setTextColor(150, 150, 150);
-  doc.setFontSize(8);
-  doc.text('Generated by BM&DC Article Checker App', 105, 290, { align: 'center' });
-
-  doc.save(`BMDC_Report_${now.replace(/\//g, '-')}.pdf`);
+  doc.save(`BMDC_Report_${now.replace(/\//g,'-')}.pdf`);
 }
 </script>
 </body>
