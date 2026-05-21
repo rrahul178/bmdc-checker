@@ -14,7 +14,7 @@
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Source Sans 3', sans-serif; background: var(--cream); color: var(--dark); min-height: 100vh; }
-  header { background: var(--green); color: white; padding: 20px 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+  header { background: var(--green); color: white; padding: 20px; display: flex; align-items: center; gap: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
   .logo-icon { width: 48px; height: 48px; background: var(--gold); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
   header h1 { font-family: 'Playfair Display', serif; font-size: 1.3rem; line-height: 1.2; }
   header p { font-size: 0.78rem; opacity: 0.8; margin-top: 2px; }
@@ -121,36 +121,44 @@
 </div>
 
 <script>
-const BMDC_RULES = `You are a BM&DC (Bangladesh Medical and Dental Council) journal article compliance checker. Analyze the article and return ONLY a valid JSON array. No other text, no markdown, no explanation.
+const GEMINI_API_KEY = 'AIzaSyAPsWj854h_aARFHGhbwfaQcq5y9eon9_M';
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-BM&DC rules:
+const BMDC_PROMPT = `You are a BM&DC (Bangladesh Medical and Dental Council) journal article compliance checker.
+
+BM&DC rules for manuscript submission:
 1. Manuscripts must be in English on biomedical topics
-2. Title page: title, authors with affiliations, department, email, phone
-3. Title: concise, informative, self-explanatory, no abbreviations
-4. Abstract: structured with Background, Objectives, Materials & Methods, Results, Conclusion
-5. Keywords: exactly 5-7 relevant keywords
-6. Body sections required: Introduction, Materials & Methods, Results, Discussion
-7. Introduction: research problem, objectives, significance - no data or conclusions
-8. Methods: study design, period, place, sample size, sampling, statistical analysis, ethical clearance
-9. Results: findings with tables/figures, no interpretation
-10. Discussion: interpret findings, compare literature, limitations, future directions
-11. Tables/figures: sequentially numbered with descriptive titles
-12. Abbreviations: defined on first use, not in title
+2. Title page must include: title, all authors with affiliations, department names, email, phone number
+3. Title must be concise, informative, self-explanatory — no abbreviations in title
+4. Abstract must be structured: Background, Objectives, Materials & Methods, Results, Conclusion
+5. Keywords: exactly 5-7 relevant keywords required
+6. Body must have all sections: Introduction, Materials & Methods, Results, Discussion
+7. Introduction: state research problem, objectives, significance — NO data or conclusions here
+8. Materials & Methods: study design, period, place, sample size, sampling method, statistical analysis, ethical clearance
+9. Results: present findings clearly — NO interpretation here
+10. Discussion: interpret findings, compare with previous studies, state limitations, propose future directions
+11. Tables and figures: sequentially numbered with descriptive titles and legends
+12. Abbreviations: defined on first use, NOT used in the title
 13. References: consistent citation style (APA/Vancouver/Harvard)
 14. Required sections: Acknowledgment, Conflict of interest, Author contribution, Funding source
-15. IRB clearance number and date must be mentioned
+15. IRB/ethical clearance reference number and date must be mentioned
 16. AI tool usage must be declared if used
 17. Plagiarism report required
 
-Return JSON array format:
-[{"type":"error","category":"bmdc","title":"short title","detail":"specific detail"},...]
+Analyze the article text provided and return ONLY a valid JSON array. No markdown, no explanation, just the JSON array.
 
-type must be: "error", "warning", or "ok"
-category must be: "bmdc", "language", or "structure"
-Return ONLY the JSON array, nothing else.`;
+Each item in the array must be:
+{"type":"error","category":"bmdc","title":"short title","detail":"specific detail about what is wrong or missing"}
+
+Rules:
+- type: must be exactly "error", "warning", or "ok"
+- category: must be exactly "bmdc", "language", or "structure"  
+- title: short 3-6 word title
+- detail: specific 1-2 sentence explanation
+
+Return ONLY the JSON array starting with [ and ending with ]. Nothing else.`;
 
 let analysisResults = [];
-let articleContent = '';
 
 document.getElementById('fileInput').addEventListener('change', e => {
   if (e.target.files[0]) handleFile(e.target.files[0]);
@@ -181,99 +189,66 @@ function showError(msg) {
   box.style.display = 'block';
   box.textContent = msg;
 }
-
-function hideError() {
-  document.getElementById('errorBox').style.display = 'none';
-}
+function hideError() { document.getElementById('errorBox').style.display = 'none'; }
 
 async function analyzeArticle() {
   hideError();
-  articleContent = document.getElementById('articleText').value.trim();
-  
+  const articleContent = document.getElementById('articleText').value.trim();
+
   if (!articleContent || articleContent.length < 30) {
     showError('অনুগ্রহ করে আর্টিকেলের টেক্সট পেস্ট করুন।');
     return;
   }
 
   const checks = [...document.querySelectorAll('.checklist input:checked')].map(c => c.value);
-  if (checks.length === 0) {
-    showError('অন্তত একটি check সিলেক্ট করুন।');
-    return;
-  }
+  if (checks.length === 0) { showError('অন্তত একটি check সিলেক্ট করুন।'); return; }
 
   document.getElementById('loading').style.display = 'block';
   document.getElementById('results').style.display = 'none';
   document.getElementById('analyzeBtn').disabled = true;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const prompt = `${BMDC_PROMPT}\n\nCheck these areas: ${checks.join(', ')}.\n\nARTICLE TEXT:\n${articleContent.substring(0, 5000)}`;
+
+    const response = await fetch(GEMINI_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 2000,
-        system: BMDC_RULES,
-        messages: [{
-          role: 'user',
-          content: `Check these areas: ${checks.join(', ')}.\n\nARTICLE:\n${articleContent.substring(0, 5000)}`
-        }]
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.3, maxOutputTokens: 2048 }
       })
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      throw new Error('API Error ' + response.status + ': ' + (data.error?.message || 'Unknown error'));
+      throw new Error('API Error ' + response.status + ': ' + (data.error?.message || 'Unknown'));
     }
 
-    if (!data.content || !Array.isArray(data.content) || data.content.length === 0) {
-      throw new Error('Empty response from API');
-    }
+    const raw = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!raw) throw new Error('Empty response from Gemini');
 
-    // Extract text from response
-    const raw = data.content
-      .filter(item => item && item.type === 'text')
-      .map(item => item.text || '')
-      .join('');
-
-    if (!raw) throw new Error('No text in API response');
-
-    // Try to extract JSON array
+    // Extract JSON array
     let parsed = null;
-    
-    // Method 1: direct JSON array match
-    const arrayMatch = raw.match(/\[[\s\S]*?\]/);
+    const arrayMatch = raw.match(/\[[\s\S]*\]/);
     if (arrayMatch) {
       try { parsed = JSON.parse(arrayMatch[0]); } catch(e) {}
     }
-    
-    // Method 2: clean and parse
     if (!parsed) {
       try {
         const clean = raw.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
         parsed = JSON.parse(clean);
       } catch(e) {}
     }
-
-    // Method 3: fallback — show raw response
     if (!parsed || !Array.isArray(parsed)) {
-      parsed = [{
-        type: 'warning',
-        category: 'bmdc',
-        title: 'Analysis Result',
-        detail: raw.substring(0, 400)
-      }];
+      parsed = [{ type: 'warning', category: 'bmdc', title: 'Analysis Result', detail: raw.substring(0, 300) }];
     }
 
-    // Validate each item
-    analysisResults = parsed.filter(item => item && typeof item === 'object').map(item => ({
-      type: ['error','warning','ok'].includes(item.type) ? item.type : 'warning',
-      category: ['bmdc','language','structure'].includes(item.category) ? item.category : 'bmdc',
-      title: String(item.title || 'Issue found'),
-      detail: String(item.detail || '')
+    analysisResults = parsed.filter(i => i && typeof i === 'object').map(i => ({
+      type: ['error','warning','ok'].includes(i.type) ? i.type : 'warning',
+      category: ['bmdc','language','structure'].includes(i.category) ? i.category : 'bmdc',
+      title: String(i.title || 'Issue'),
+      detail: String(i.detail || '')
     }));
 
     if (analysisResults.length === 0) {
@@ -285,7 +260,7 @@ async function analyzeArticle() {
   } catch (err) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('analyzeBtn').disabled = false;
-    showError('বিশ্লেষণে সমস্যা: ' + err.message + '\n\nInternet connection চেক করুন।');
+    showError('বিশ্লেষণে সমস্যা: ' + err.message);
   }
 }
 
@@ -297,48 +272,42 @@ function showResults(results) {
   const errors = results.filter(r => r.type === 'error').length;
   const warnings = results.filter(r => r.type === 'warning').length;
   const oks = results.filter(r => r.type === 'ok').length;
-  const total = results.length;
-  const score = total > 0 ? Math.round((oks / total) * 100) : 0;
+  const score = results.length > 0 ? Math.round((oks / results.length) * 100) : 0;
 
   document.getElementById('summaryBar').innerHTML = `
-    <div class="summary-pill pill-error">❌ ${errors} Error${errors !== 1 ? 's' : ''}</div>
-    <div class="summary-pill pill-warning">⚠️ ${warnings} Warning${warnings !== 1 ? 's' : ''}</div>
-    <div class="summary-pill pill-ok">✅ ${oks} Passed</div>
-  `;
-  document.getElementById('scoreText').textContent = `Compliance Score: ${score}% (${oks}/${total} passed)`;
+    <div class="summary-pill pill-error">❌ ${errors} Error${errors!==1?'s':''}</div>
+    <div class="summary-pill pill-warning">⚠️ ${warnings} Warning${warnings!==1?'s':''}</div>
+    <div class="summary-pill pill-ok">✅ ${oks} Passed</div>`;
+  document.getElementById('scoreText').textContent = `Compliance Score: ${score}% (${oks}/${results.length} passed)`;
 
   document.getElementById('issueList').innerHTML = results.map(r => `
     <div class="issue issue-${r.type}">
-      <span class="issue-tag tag-${r.category}">${r.category === 'bmdc' ? 'BM&DC Rule' : r.category === 'language' ? 'Language' : 'Structure'}</span>
-      <strong>${r.type === 'error' ? '❌' : r.type === 'warning' ? '⚠️' : '✅'} ${r.title}</strong>
+      <span class="issue-tag tag-${r.category}">${r.category==='bmdc'?'BM&DC Rule':r.category==='language'?'Language':'Structure'}</span>
+      <strong>${r.type==='error'?'❌':r.type==='warning'?'⚠️':'✅'} ${r.title}</strong>
       ${r.detail}
-    </div>
-  `).join('');
+    </div>`).join('');
 
   document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
 }
 
 function downloadPDF() {
-  if (!window.jspdf) { alert('PDF library loading... try again.'); return; }
+  if (!window.jspdf) { alert('PDF loading... try again.'); return; }
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
   const now = new Date().toLocaleDateString('en-GB');
 
-  doc.setFillColor(26, 92, 58);
-  doc.rect(0, 0, 210, 38, 'F');
-  doc.setTextColor(255,255,255);
-  doc.setFontSize(15); doc.setFont('helvetica','bold');
-  doc.text('BM&DC Article Compliance Report', 105, 16, { align: 'center' });
+  doc.setFillColor(26,92,58); doc.rect(0,0,210,38,'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(15); doc.setFont('helvetica','bold');
+  doc.text('BM&DC Article Compliance Report', 105, 16, {align:'center'});
   doc.setFontSize(9); doc.setFont('helvetica','normal');
-  doc.text('Bangladesh Medical and Dental Council', 105, 25, { align: 'center' });
-  doc.text(`Generated: ${now}`, 105, 33, { align: 'center' });
+  doc.text('Bangladesh Medical and Dental Council', 105, 25, {align:'center'});
+  doc.text(`Generated: ${now}`, 105, 33, {align:'center'});
 
-  const errors = analysisResults.filter(r => r.type === 'error').length;
-  const oks = analysisResults.filter(r => r.type === 'ok').length;
-  const score = Math.round((oks / analysisResults.length) * 100);
+  const oks = analysisResults.filter(r=>r.type==='ok').length;
+  const errors = analysisResults.filter(r=>r.type==='error').length;
+  const score = Math.round((oks/analysisResults.length)*100);
 
-  doc.setTextColor(0,0,0);
-  doc.setFontSize(11); doc.setFont('helvetica','bold');
+  doc.setTextColor(0,0,0); doc.setFontSize(11); doc.setFont('helvetica','bold');
   doc.text('Summary', 14, 50);
   doc.setFont('helvetica','normal'); doc.setFontSize(10);
   doc.text(`Score: ${score}%  |  Errors: ${errors}  |  Passed: ${oks}/${analysisResults.length}`, 14, 58);
@@ -346,14 +315,12 @@ function downloadPDF() {
   let y = 70;
   analysisResults.forEach((r, i) => {
     if (y > 270) { doc.addPage(); y = 20; }
-    const rgb = r.type === 'error' ? [192,57,43] : r.type === 'warning' ? [230,126,34] : [26,92,58];
+    const rgb = r.type==='error'?[192,57,43]:r.type==='warning'?[230,126,34]:[26,92,58];
     doc.setTextColor(...rgb); doc.setFont('helvetica','bold'); doc.setFontSize(10);
-    doc.text(`${i+1}. [${r.type.toUpperCase()}] ${r.title}`, 14, y);
-    y += 6;
+    doc.text(`${i+1}. [${r.type.toUpperCase()}] ${r.title}`, 14, y); y += 6;
     doc.setTextColor(60,60,60); doc.setFont('helvetica','normal'); doc.setFontSize(9);
     const lines = doc.splitTextToSize(r.detail, 180);
-    doc.text(lines, 18, y);
-    y += lines.length * 5 + 5;
+    doc.text(lines, 18, y); y += lines.length * 5 + 5;
   });
 
   doc.save(`BMDC_Report_${now.replace(/\//g,'-')}.pdf`);
